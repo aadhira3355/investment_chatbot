@@ -1,9 +1,8 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Configure the Gemini API with the secret
+# --- GEMINI SETUP ---
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
 gemini_model = genai.GenerativeModel('models/gemini-2.0-flash-001')
 
 # --- HELPER FUNCTIONS ---
@@ -32,49 +31,76 @@ def generate_with_gemini(prompt):
     except:
         return "Sorry, I couldn't process your request at the moment."
 
-# --- STREAMLIT UI CONFIG ---
+# --- PAGE CONFIG ---
 st.set_page_config(page_title="Smart Investment Chatbot", page_icon="📈", layout="centered")
 
-# --- CUSTOM FONT AND STYLING ---
+# --- CUSTOM CSS STYLE ---
 st.markdown("""
     <style>
     .stApp {
-        background-color: #1e2a38;
-        color: #ffffff;
+        background-color: #121e2c;
+        color: #f0f0f0;
         font-family: 'Segoe UI', sans-serif;
-        font-size: 50px;
+    }
+    .block-container {
+        padding-top: 2rem;
+        max-width: 850px;
+        margin: auto;
+    }
+    h1, h2, h3, h4, h5, h6, .stMarkdown {
+        color: #f0f0f0;
     }
     .stChatMessage {
-        font-size: 50px;
-        line-height: 1.65;
+        font-size: 22px;
+        line-height: 1.75;
+    }
+    .stChatMessage.user {
+        background: linear-gradient(to right, #324960, #3e5a77);
+        color: white;
+        border-radius: 16px 16px 6px 16px;
+        padding: 12px 18px;
+    }
+    .stChatMessage.assistant {
+        background: #e9f1fc;
+        color: #1b2a3b;
+        border-radius: 16px 16px 16px 6px;
+        padding: 12px 18px;
     }
     div[role="textbox"] textarea {
-        font-size: 100px !important;
+        font-size: 20px !important;
+        background-color: #2a3c50 !important;
         color: white !important;
-        background-color: #3b4a5a !important;
         border-radius: 8px;
-        border: 1.5px solid #8899aa;
+        border: 1.5px solid #6c8ca1;
+        padding: 10px;
+    }
+    img {
+        border-radius: 14px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.25);
     }
     </style>
 """, unsafe_allow_html=True)
 
 # --- IMAGE HEADER ---
-st.image("img1.jpg", use_container_width=True, caption="Smart Investment Assistant", output_format='auto')
+st.image("img1.jpg", use_container_width=True, caption="💡 Smart Investment Assistant", output_format='auto')
 
-# --- HEADER ---
-st.title("📈 Smart Investment Chatbot")
-st.markdown("#### AI-powered investment insights")
-st.caption("💡 Try questions like: *'Best long-term investment?'* or *'Compare mutual funds and stocks'*")
+# --- HEADER TEXT ---
+st.markdown("<h1 style='text-align:center; font-size: 36px;'>📈 Smart Investment Chatbot</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align:center; color:#a3c9f9;'>Get investment insights instantly using AI</h4>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; font-size:18px;'>💬 Try: <em>Compare stocks vs gold</em> or <em>Best long-term investment</em></p>", unsafe_allow_html=True)
 
-# --- CHAT FUNCTIONALITY ---
+# --- CHATBOT LOGIC ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Show chat history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-question = st.chat_input("Ask about investments...")
+# Input box
+question = st.chat_input("Ask your investment question...")
 
 if question:
     st.session_state.messages.append({"role": "user", "content": question})
