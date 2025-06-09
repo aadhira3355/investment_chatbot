@@ -1,9 +1,9 @@
 import streamlit as st
 import google.generativeai as genai
 
+# Configure the Gemini API with the secret
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
- # Replace with a secure method in production
-genai.configure(api_key=GEMINI_API_KEY)
+
 gemini_model = genai.GenerativeModel('models/gemini-2.0-flash-001')
 
 # --- HELPER FUNCTIONS ---
