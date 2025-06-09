@@ -1,11 +1,11 @@
 import streamlit as st
+import time
 import google.generativeai as genai
 
 # --- GEMINI SETUP ---
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 gemini_model = genai.GenerativeModel('models/gemini-2.0-flash-001')
 
-# --- HELPER FUNCTIONS ---
 def is_greeting(text):
     greetings = ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening']
     return any(greet in text.lower().strip() for greet in greetings)
@@ -34,11 +34,11 @@ def generate_with_gemini(prompt):
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Smart Investment Chatbot", page_icon="📈", layout="centered")
 
-# --- CUSTOM CSS STYLE ---
+# --- CUSTOM CSS STYLING ---
 st.markdown("""
     <style>
     .stApp {
-        background-color: #121e2c;
+        background-color: #101d2c;
         color: #f0f0f0;
         font-family: 'Segoe UI', sans-serif;
     }
@@ -47,21 +47,34 @@ st.markdown("""
         max-width: 850px;
         margin: auto;
     }
-    h1, h2, h3, h4, h5, h6, .stMarkdown {
-        color: #f0f0f0;
+    h1 {
+        animation: bounce 1s ease;
+        font-size: 38px;
+        text-align: center;
+        color: #a3d0f9;
+    }
+    @keyframes bounce {
+        0% { transform: scale(0.95); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
     }
     .stChatMessage {
         font-size: 22px;
         line-height: 1.75;
+        animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     .stChatMessage.user {
-        background: linear-gradient(to right, #324960, #3e5a77);
+        background: linear-gradient(to right, #344a5e, #456179);
         color: white;
         border-radius: 16px 16px 6px 16px;
         padding: 12px 18px;
     }
     .stChatMessage.assistant {
-        background: #e9f1fc;
+        background: #f4f9ff;
         color: #1b2a3b;
         border-radius: 16px 16px 16px 6px;
         padding: 12px 18px;
@@ -70,36 +83,36 @@ st.markdown("""
         font-size: 20px !important;
         background-color: #2a3c50 !important;
         color: white !important;
-        border-radius: 8px;
         border: 1.5px solid #6c8ca1;
+        border-radius: 8px;
         padding: 10px;
     }
     img {
         border-radius: 14px;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         box-shadow: 0 2px 12px rgba(0,0,0,0.25);
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- IMAGE HEADER ---
-st.image("img1.jpg", use_container_width=True, caption="💡 Smart Investment Assistant", output_format='auto')
+# --- HEADER IMAGE ---
+st.image("img1.jpg", use_container_width=True)
 
 # --- HEADER TEXT ---
-st.markdown("<h1 style='text-align:center; font-size: 36px;'>📈 Smart Investment Chatbot</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align:center; color:#a3c9f9;'>Get investment insights instantly using AI</h4>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; font-size:18px;'>💬 Try: <em>Compare stocks vs gold</em> or <em>Best long-term investment</em></p>", unsafe_allow_html=True)
+st.markdown("<h1>📈 Smart Investment Chatbot</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align:center; color:#a3c9f9;'>Your AI assistant for smarter financial decisions</h4>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; font-size:18px;'>💬 Try: <em>‘Best long-term investment?’</em> or <em>‘Compare ETFs and gold’</em></p>", unsafe_allow_html=True)
 
-# --- CHATBOT LOGIC ---
+# --- CHAT STATE ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Show chat history
+# --- DISPLAY CHAT HISTORY ---
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Input box
+# --- CHAT INPUT ---
 question = st.chat_input("Ask your investment question...")
 
 if question:
@@ -107,13 +120,24 @@ if question:
     with st.chat_message("user"):
         st.markdown(question)
 
-    if is_greeting(question):
-        response = "👋 Hello! How can I help you with your investment questions today?"
-    elif not check_investment_intent(question):
-        response = "⚠️ Please ask investment-related questions only."
-    else:
-        response = generate_with_gemini(question)
+    # Show typing animation
+    with st.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            time.sleep(1)  # Simulated delay
+
+            if is_greeting(question):
+                response = "👋 Hello! How can I help you with your investment questions today?"
+            elif not check_investment_intent(question):
+                response = "⚠️ Please ask investment-related questions only."
+            else:
+                response = generate_with_gemini(question)
+
+            # Typing animation
+            placeholder = st.empty()
+            animated_text = ""
+            for char in response:
+                animated_text += char
+                placeholder.markdown(animated_text)
+                time.sleep(0.01)  # typing effect
 
     st.session_state.messages.append({"role": "assistant", "content": response})
-    with st.chat_message("assistant"):
-        st.markdown(response)
