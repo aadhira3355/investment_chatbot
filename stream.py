@@ -23,7 +23,7 @@ def check_investment_intent(question):
         answer = response.text.strip().lower()
         return 'yes' in answer
     except:
-        return True  # Conservative fallback
+        return True
 
 def generate_with_gemini(prompt):
     try:
@@ -32,22 +32,48 @@ def generate_with_gemini(prompt):
     except:
         return "Sorry, I couldn't process your request at the moment."
 
-# --- STREAMLIT UI ---
-st.set_page_config(page_title="Smart Investment Chatbot", page_icon="💼", layout="centered")
+# --- STREAMLIT UI CONFIG ---
+st.set_page_config(page_title="Smart Investment Chatbot", page_icon="📈", layout="centered")
 
-st.title("💼 Smart Investment Chatbot")
-st.caption("AI-powered investment insights")
+# --- CUSTOM FONT AND STYLING ---
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: #1e2a38;
+        color: #ffffff;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 50px;
+    }
+    .stChatMessage {
+        font-size: 50px;
+        line-height: 1.65;
+    }
+    div[role="textbox"] textarea {
+        font-size: 100px !important;
+        color: white !important;
+        background-color: #3b4a5a !important;
+        border-radius: 8px;
+        border: 1.5px solid #8899aa;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# Initialize chat history
+# --- IMAGE HEADER ---
+st.image("img1.jpg", use_container_width=True, caption="Smart Investment Assistant", output_format='auto')
+
+# --- HEADER ---
+st.title("📈 Smart Investment Chatbot")
+st.markdown("#### AI-powered investment insights")
+st.caption("💡 Try questions like: *'Best long-term investment?'* or *'Compare mutual funds and stocks'*")
+
+# --- CHAT FUNCTIONALITY ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Input box
 question = st.chat_input("Ask about investments...")
 
 if question:
@@ -55,11 +81,10 @@ if question:
     with st.chat_message("user"):
         st.markdown(question)
 
-    # Determine response
     if is_greeting(question):
-        response = "Hello! How can I assist you with your investments today?"
+        response = "👋 Hello! How can I help you with your investment questions today?"
     elif not check_investment_intent(question):
-        response = "Please ask investment-related questions only."
+        response = "⚠️ Please ask investment-related questions only."
     else:
         response = generate_with_gemini(question)
 
