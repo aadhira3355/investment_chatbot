@@ -17,3 +17,11 @@ A simple Streamlit app that shows how to build a chatbot using gemini-2.0-flash-
    ```
    $ streamlit run streamlit_app.py
    ```
+## 🚀 Features
+
+- ✨ Beautiful, dark-themed UI with animations
+- 💬 Real-time chat experience with typing effect
+- 📈 AI-powered investment Q&A using Gemini API
+- 🤖 Intelligent intent filtering (only investment-related queries)
+- 📸 Custom branding and styling
+- ☁️ Ready for deployment on [Streamlit Cloud](https://streamlit.io/cloud)
